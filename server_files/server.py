@@ -1,5 +1,5 @@
 #!flask/bin/python
-from flask import Flask, jsonify, abort, make_response, request
+from flask import Flask, jsonify, abort, make_response, request, render_template
 import json
 import yaml
 
@@ -11,6 +11,11 @@ config = yaml.full_load(open('config.yaml'))
 conn = pymongo.MongoClient(username=os.environ['mongo_login'], password=os.environ['mongo_password'],
                            host=config['db']['host'], port=config['db']['port'])
 
+
+
+@app.route('/', methods=['GET'])
+def index():
+    return render_template('template.html')
 
 @app.route('/api/tasks', methods=['GET'])
 def get_tasks():
