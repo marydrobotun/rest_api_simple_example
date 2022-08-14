@@ -1,0 +1,4 @@
+db:
+  db_name: tasks
+  host: db
+  port: 27017

@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    networks:
+      - net
+    ports:
+      - "80:80"
+    volumes:
+      - .:/code
+    restart: always
+    depends_on:
+      - db
+    env_file:
+      - .env
+  db:
+    image: mongo:4.1
+    networks:
+      - net
+    volumes:
+      - ./dump:/dump
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "${mongo_login}"
+      MONGO_INITDB_ROOT_PASSWORD: "${mongo_password}"
+    restart: always
+    env_file:
+      - .env
+  restore_db:
+    image: mongo:4.1
+    volumes:
+      - ./dump:/dump
+    entrypoint: ["mongorestore", "--host", "db","-u", "${mongo_login}", "-p", "${mongo_password}", "--authenticationDatabase", "admin", "/dump"]
+    networks:
+      - net
+    depends_on:
+      - db
+    env_file:
+      - .env
+    restart: always
+networks:
+      net:
+        external:
+          name: my-bridge-network
